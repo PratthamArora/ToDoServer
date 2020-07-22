@@ -43,7 +43,7 @@ fun Route.users(
             newUser?.userId?.let {
                 call.sessions.set(MySession(it))
                 call.respondText(
-                    "jwt token is : ${jwtService.generateToken(newUser)}",
+                    jwtService.generateToken(newUser),
                     status = HttpStatusCode.Created
                 )
             }
@@ -69,7 +69,7 @@ fun Route.users(
             currentUser?.userId?.let {
                 if (currentUser.passwordHash == hash) {
                     call.sessions.set(MySession(it))
-                    call.respondText("jwt token is : ${jwtService.generateToken(currentUser)}")
+                    call.respondText(jwtService.generateToken(currentUser))
                 } else {
                     call.respond(
                         HttpStatusCode.BadRequest, "Problems retrieving User"
@@ -81,6 +81,5 @@ fun Route.users(
             call.respond(HttpStatusCode.BadRequest, "Problems retrieving User")
         }
     }
-
 }
 
