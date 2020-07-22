@@ -5,5 +5,5 @@ object Constant {
     const val USERS = "$API_VERSION/users"
     const val USER_LOGIN = "$USERS/login"
     const val USER_CREATE = "$USERS/create"
-
+    const val TODOS = "$API_VERSION/todos"
 }

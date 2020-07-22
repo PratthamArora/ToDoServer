@@ -5,6 +5,7 @@ import com.pratthamarora.auth.MySession
 import com.pratthamarora.auth.hash
 import com.pratthamarora.repository.DatabaseFactory
 import com.pratthamarora.repository.TodoRepository
+import com.pratthamarora.routes.todos
 import com.pratthamarora.routes.users
 import io.ktor.application.Application
 import io.ktor.application.install
@@ -62,7 +63,7 @@ fun Application.module(testing: Boolean = false) {
 
     routing {
         users(db, jwtService, hashFunction)
-
+        todos(db)
     }
 }
 
