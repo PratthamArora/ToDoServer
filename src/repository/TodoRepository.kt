@@ -1,5 +1,6 @@
 package com.pratthamarora.repository
 
+import com.pratthamarora.model.Todo
 import com.pratthamarora.model.User
 import com.pratthamarora.repository.DatabaseFactory.dbQuery
 import org.jetbrains.exposed.sql.ResultRow
@@ -10,7 +11,7 @@ import org.jetbrains.exposed.sql.statements.InsertStatement
 class TodoRepository : Repository {
 
     override suspend fun addUser(email: String, displayName: String, passwordHash: String): User? {
-        var statement : InsertStatement<Number>? = null
+        var statement: InsertStatement<Number>? = null
         dbQuery {
             statement = Users.insert { user ->
                 user[Users.email] = email
@@ -26,7 +27,7 @@ class TodoRepository : Repository {
             .map { rowToUser(it) }.singleOrNull()
     }
 
-    override suspend fun findUserByEmail(email: String)= dbQuery {
+    override suspend fun findUserByEmail(email: String) = dbQuery {
         Users.select { Users.email.eq(email) }
             .map { rowToUser(it) }.singleOrNull()
     }
@@ -42,4 +43,37 @@ class TodoRepository : Repository {
             passwordHash = row[Users.passwordHash]
         )
     }
+
+    override suspend fun addTodo(userId: Int, todo: String, done: Boolean): Todo? {
+        var statement: InsertStatement<Number>? = null
+        dbQuery {
+            statement = Todos.insert {
+                it[Todos.userId] = userId
+                it[Todos.todo] = todo
+                it[Todos.done] = done
+            }
+        }
+        return rowToTodo(statement?.resultedValues?.get(0))
+    }
+
+    override suspend fun getTodos(userId: Int): List<Todo> {
+        return dbQuery {
+            Todos.select {
+                Todos.userId.eq((userId))
+            }.mapNotNull { rowToTodo(it) }
+        }
+    }
+
+    private fun rowToTodo(row: ResultRow?): Todo? {
+        if (row == null) {
+            return null
+        }
+        return Todo(
+            id = row[Todos.id],
+            userId = row[Todos.userId],
+            todo = row[Todos.todo],
+            done = row[Todos.done]
+        )
+    }
+
 }
